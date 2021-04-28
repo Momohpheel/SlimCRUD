@@ -4,7 +4,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
-require __DIR__. '/../config/db.php';
+//require __DIR__. '/../config/Database.php';
+require __DIR__. '/../Service/AuthService.php';
+require __DIR__. '/../Service/CrudService.php';
 
 
 $app = AppFactory::create();
@@ -27,10 +29,39 @@ $app->get('/', function(Request $request, Response $response){
 });
 
 
-$app->get('/register', function(Request $request, Response $response){
+$app->post('/register', function(Request $request, Response $response){
+    $auth = new AuthService();
+    $verify = $auth->verifyParam(array('fullname','username','password'));
 
-    $response->getBody()->write("Hello, World");
-    return $response;
+    
+
+    if ($verify == true){
+        $params = (array)$request->getParsedBody();
+        $fullname = $params['fullname'];
+        $username = $params['username'];
+        $password = $params['password'];
+
+        $register = $auth->register($fullname, $username, $password);
+        
+        if ($register){
+            $data =[
+                "message" => "User saved successfully",
+            ];
+            
+        }else{
+            $data =[
+                "message" => "User failed to save",
+            ];
+        }
+  
+    }else{
+        $data =[
+            "message" => "Missing parameters",
+        ];
+    }
+
+    $response->getBody()->write(json_encode($data));
+            return $response->withHeader('Content-type', 'application/json');;
 
 });
 
