@@ -3,7 +3,7 @@
     class Database{
              //DB Params
             private $username= 'root';
-            private $db_name = 'restapi';
+            private $db_name = 'slimapi';
             private $host = 'localhost';
             private $password = '';
             private $conn;
